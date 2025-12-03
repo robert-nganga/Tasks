@@ -10,4 +10,13 @@ class AddEditTaskViewModel(
 
     private val _state = MutableStateFlow(taskId ?: -1)
     val state = _state.asStateFlow()
+
+    init {
+        println("AddEditTaskViewModel initialized with taskId: $taskId")
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println("AddEditTaskViewModel with taskId: $taskId is cleared")
+    }
 }

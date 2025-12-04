@@ -1,4 +1,4 @@
-package com.robert.tasks.screens
+package com.robert.tasks.presentation.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.robert.tasks.viewmodels.TaskListViewModel
+import com.robert.tasks.presentation.viewmodels.TaskListViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 

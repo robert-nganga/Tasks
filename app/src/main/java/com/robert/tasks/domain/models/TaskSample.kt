@@ -1,6 +1,6 @@
-package com.robert.tasks.models
+package com.robert.tasks.domain.models
 
-data class Task (
+data class TaskSample (
     val id: Int,
     val title: String,
     val isCompleted: Boolean

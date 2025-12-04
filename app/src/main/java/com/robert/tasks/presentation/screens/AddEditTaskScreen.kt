@@ -1,4 +1,4 @@
-package com.robert.tasks.screens
+package com.robert.tasks.presentation.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.robert.tasks.viewmodels.AddEditTaskViewModel
+import com.robert.tasks.presentation.viewmodels.AddEditTaskViewModel
 
 @Composable
 fun AddEditTaskScreen(

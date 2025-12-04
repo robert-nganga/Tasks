@@ -1,7 +1,7 @@
-package com.robert.tasks.viewmodels
+package com.robert.tasks.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.robert.tasks.models.Task
+import com.robert.tasks.domain.models.TaskSample
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -9,7 +9,7 @@ class TaskListViewModel : ViewModel() {
 
     private val _tasks = MutableStateFlow(
         (1..100).map{
-            Task(
+            TaskSample(
                 id = it,
                 title = "Task #$it",
                 isCompleted = false

@@ -1,4 +1,4 @@
-package com.robert.tasks.navigation
+package com.robert.tasks.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -7,8 +7,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.robert.tasks.screens.AddEditTaskScreen
-import com.robert.tasks.screens.TaskListScreen
+import com.robert.tasks.presentation.screens.AddEditTaskScreen
+import com.robert.tasks.presentation.screens.TaskListScreen
 
 @Composable
 fun NavigationRoot(

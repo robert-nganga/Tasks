@@ -1,4 +1,4 @@
-package com.robert.tasks.navigation
+package com.robert.tasks.presentation.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable

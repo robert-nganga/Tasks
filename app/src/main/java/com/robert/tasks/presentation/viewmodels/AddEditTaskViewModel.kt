@@ -1,4 +1,4 @@
-package com.robert.tasks.viewmodels
+package com.robert.tasks.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

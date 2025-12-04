@@ -1,6 +1,5 @@
-package com.robert.tasks.ui.theme
+package com.robert.tasks.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

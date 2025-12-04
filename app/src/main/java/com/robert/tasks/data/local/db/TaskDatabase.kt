@@ -7,5 +7,5 @@ import com.robert.tasks.data.local.entities.TaskEntity
 
 @Database(entities = [TaskEntity::class], version = 1)
 abstract class TaskDatabase : RoomDatabase() {
-    abstract fun userDao(): TaskDao
+    abstract fun taskDao(): TaskDao
 }

@@ -7,18 +7,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.robert.tasks.presentation.viewmodels.TaskListViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.robert.tasks.presentation.viewmodels.TaskListViewModel
 
 
 @Composable
 fun TaskListScreen(
     modifier: Modifier = Modifier,
-    viewModel: TaskListViewModel = viewModel(),
+    viewModel: TaskListViewModel = hiltViewModel(),
     onTaskClick: (Int) -> Unit
 ) {
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()

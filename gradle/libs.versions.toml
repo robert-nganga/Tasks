@@ -17,14 +17,16 @@ kotlinSerialization = "2.2.20"
 kotlinxSerializationCore = "1.8.1"
 material3AdaptiveNav3 = "1.3.0-alpha04"
 ksp = "2.0.21-1.0.27"
-okhttpBom = "5.3.0"
+okhttpBom = "4.12.0"
 retrofit = "3.0.0"
 roomRuntime = "2.8.4"
 hilt = "2.57.1"
+hiltNavigationCompose = "1.3.0"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomRuntime" }
@@ -55,6 +57,7 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttpBom" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

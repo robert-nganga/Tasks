@@ -30,3 +30,12 @@ fun TaskEntity.toDomainModel() = Task(
     isCompleted = this.isCompleted,
     fileUrl = this.fileUrl
 )
+
+fun Task.toEntity() = TaskEntity(
+    id = this.id,
+    title = this.title,
+    dueDate = this.dueDate,
+    description = this.description,
+    isCompleted = this.isCompleted,
+    fileUrl = this.fileUrl
+)

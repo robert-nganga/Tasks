@@ -20,10 +20,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.robert.tasks.domain.models.Task
 import com.robert.tasks.presentation.viewmodels.TaskListViewModel
+import com.robert.tasks.utils.DateUtils
 
 @Composable
 fun TaskListScreen(
-    modifier: Modifier = Modifier,
     viewModel: TaskListViewModel = hiltViewModel(),
     onTaskClick: (Int) -> Unit,
     onAddTaskClick: () -> Unit
@@ -36,7 +36,7 @@ fun TaskListScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Header
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -48,7 +48,7 @@ fun TaskListScreen(
                 text = "Tasks",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             FloatingActionButton(
@@ -65,7 +65,7 @@ fun TaskListScreen(
             }
         }
 
-        // Task List
+
         if (isRefreshing) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -102,7 +102,7 @@ fun TaskListItem(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF8F9FA)
+            containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
         ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
@@ -115,13 +115,13 @@ fun TaskListItem(
                 text = task.title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            val dueDateColor = if (task.isOverdue()) Color(0xFFEF4444) else Color(0xFF6B7280)
-            val dueDateText = if (task.isOverdue()) "Overdue" else "Due ${task.dueDate}"
+            val dueDateColor = if (task.isOverdue()) Color(0xFFEF4444) else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            val dueDateText = DateUtils.getDueDateText(task.dueDate)
 
             Text(
                 text = dueDateText,
@@ -133,6 +133,8 @@ fun TaskListItem(
     }
 }
 
+
+
 fun Task.isOverdue(): Boolean {
-    return dueDate.contains("Overdue", ignoreCase = true)
+    return DateUtils.isOverdue(this.dueDate)
 }

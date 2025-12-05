@@ -101,9 +101,9 @@ object DateUtils {
 
         return when {
             isOverdue(dateString) -> "Overdue"
-            isDueToday(dateString) -> "today"
-            isDueTomorrow(dateString) -> "tomorrow"
-            else -> formatToMonthDay(dateString)
+            isDueToday(dateString) -> "Today"
+            isDueTomorrow(dateString) -> "Tomorrow"
+            else -> formatToFullDate(dateString)
         }
     }
 

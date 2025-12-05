@@ -30,18 +30,21 @@ fun NavigationRoot(
             when (key) {
                 is Route.Tasks -> {
                     NavEntry(key){
-                        val viewModel: TaskListViewModel = hiltViewModel()
                         TaskListScreen(
                             onTaskClick = { taskId ->
                                 backStack.add(Route.AddEditTask(taskId))
-                            }
+                            },
+                            onAddTaskClick = {
+                                backStack.add(Route.AddEditTask(null))
+                            },
                         )
                     }
                 }
                 is Route.AddEditTask -> {
                     NavEntry(key){
                         AddEditTaskScreen(
-                            taskIId = key.taskId
+                            taskId = key.taskId,
+                            onNavigateBack = { backStack.removeLastOrNull() }
                         )
                     }
                 }

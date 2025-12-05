@@ -2,6 +2,7 @@ package com.robert.tasks.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -9,6 +10,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.robert.tasks.presentation.screens.AddEditTaskScreen
 import com.robert.tasks.presentation.screens.TaskListScreen
+import com.robert.tasks.presentation.viewmodels.AddEditTaskViewModel
 
 @Composable
 fun NavigationRoot(
@@ -39,8 +41,13 @@ fun NavigationRoot(
                 }
                 is Route.AddEditTask -> {
                     NavEntry(key){
+                        val viewModel = hiltViewModel<AddEditTaskViewModel, AddEditTaskViewModel.Factory>(
+                            creationCallback = { factory ->
+                                factory.create(key)
+                            }
+                        )
                         AddEditTaskScreen(
-                            taskId = key.taskId,
+                            viewModel = viewModel,
                             onNavigateBack = { backStack.removeLastOrNull() },
                             onTaskSaved = { backStack.removeLastOrNull() }
                         )

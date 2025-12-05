@@ -5,26 +5,52 @@ import androidx.lifecycle.viewModelScope
 import com.robert.tasks.domain.models.CreateTaskRequest
 import com.robert.tasks.domain.models.UpdateTaskRequest
 import com.robert.tasks.domain.repositories.TaskRepository
+import com.robert.tasks.presentation.navigation.Route
 import com.robert.tasks.presentation.screens.AddEditTaskState
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-@HiltViewModel
-class AddEditTaskViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+@HiltViewModel(assistedFactory = AddEditTaskViewModel.Factory::class)
+class AddEditTaskViewModel @AssistedInject constructor(
+    private val taskRepository: TaskRepository,
+    @Assisted private val navKey: Route.AddEditTask
 ): ViewModel() {
 
 
     private val _state = MutableStateFlow(AddEditTaskState())
     val state = _state.asStateFlow()
 
+    val taskId: Int?
+        get() = navKey.taskId
 
-    fun saveTask(taskId: Int?) = viewModelScope.launch {
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: Route.AddEditTask): AddEditTaskViewModel
+    }
+
+
+    init {
+        println(navKey.taskId)
+        println("AddEditTaskViewModel initialized")
+        navKey.taskId?.let {
+            getTask(it)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println("AddEditTaskViewModel cleared")
+    }
+
+
+    fun saveTask() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         val result = if (taskId != null) {
@@ -36,7 +62,7 @@ class AddEditTaskViewModel @Inject constructor(
                 isCompleted = state.value.isCompleted,
                 fileUrl = state.value.fileUrl
             )
-            taskRepository.updateTask(taskId, updateRequest)
+            taskRepository.updateTask(taskId!!, updateRequest)
         } else {
             // Create new task
             val createRequest = CreateTaskRequest(
@@ -55,11 +81,11 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
-    fun deleteTask(taskId: Int?) = viewModelScope.launch {
+    fun deleteTask() = viewModelScope.launch {
         taskId ?: return@launch
 
         _state.update { it.copy(isLoading = true) }
-        val result = taskRepository.deleteTask(taskId)
+        val result = taskRepository.deleteTask(taskId!!)
         _state.update { it.copy(isLoading = false) }
 
         if (result.isFailure) {
@@ -68,6 +94,7 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun getTask(id: Int) = viewModelScope.launch {
+        println("Loading task with id: $id")
         _state.update { it.copy(isLoading = true) }
         val result = taskRepository.getTask(id)
         _state.update { it.copy(isLoading = false) }

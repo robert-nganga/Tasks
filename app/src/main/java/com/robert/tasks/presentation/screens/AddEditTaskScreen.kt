@@ -65,8 +65,6 @@ import com.robert.tasks.utils.DateUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskScreen(
-    modifier: Modifier = Modifier,
-    taskId: Int?,
     viewModel: AddEditTaskViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onTaskSaved: () -> Unit
@@ -77,11 +75,8 @@ fun AddEditTaskScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val isEditMode = taskId != null
+    val isEditMode = viewModel.taskId != null
 
-    LaunchedEffect(taskId) {
-        taskId?.let { viewModel.getTask(it) }
-    }
 
     Scaffold(
         topBar = {
@@ -106,7 +101,7 @@ fun AddEditTaskScreen(
 
                     IconButton(
                         onClick = {
-                            viewModel.saveTask(taskId)
+                            viewModel.saveTask()
                             onTaskSaved()
                         },
                         enabled = isButtonEnabled
@@ -129,7 +124,7 @@ fun AddEditTaskScreen(
         }
     ) { paddingValues ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
@@ -351,7 +346,7 @@ fun AddEditTaskScreen(
                 if (isEditMode) {
                     OutlinedButton(
                         onClick = {
-                            viewModel.deleteTask(taskId)
+                            viewModel.deleteTask()
                             onNavigateBack()
                         },
                         modifier = Modifier.fillMaxWidth(),

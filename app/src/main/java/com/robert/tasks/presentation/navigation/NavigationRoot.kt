@@ -13,22 +13,21 @@ import com.robert.tasks.presentation.screens.TaskListScreen
 import com.robert.tasks.presentation.viewmodels.AddEditTaskViewModel
 
 @Composable
-fun NavigationRoot(
-    modifier: Modifier = Modifier
-) {
-    val  backStack = rememberNavBackStack(Route.Tasks)
+fun NavigationRoot(modifier: Modifier = Modifier) {
+    val backStack = rememberNavBackStack(Route.Tasks)
 
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
+        entryDecorators =
+            listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
         entryProvider = { key ->
             when (key) {
                 is Route.Tasks -> {
-                    NavEntry(key){
+                    NavEntry(key) {
                         TaskListScreen(
                             onTaskClick = { taskId ->
                                 backStack.add(Route.AddEditTask(taskId))
@@ -40,23 +39,22 @@ fun NavigationRoot(
                     }
                 }
                 is Route.AddEditTask -> {
-                    NavEntry(key){
-                        val viewModel = hiltViewModel<AddEditTaskViewModel, AddEditTaskViewModel.Factory>(
-                            creationCallback = { factory ->
-                                factory.create(key)
-                            }
-                        )
+                    NavEntry(key) {
+                        val viewModel =
+                            hiltViewModel<AddEditTaskViewModel, AddEditTaskViewModel.Factory>(
+                                creationCallback = { factory ->
+                                    factory.create(key)
+                                },
+                            )
                         AddEditTaskScreen(
                             viewModel = viewModel,
                             onNavigateBack = { backStack.removeLastOrNull() },
-                            onTaskSaved = { backStack.removeLastOrNull() }
+                            onTaskSaved = { backStack.removeLastOrNull() },
                         )
                     }
                 }
                 else -> error("Unknown key: $key")
             }
-
-        }
+        },
     )
-
 }

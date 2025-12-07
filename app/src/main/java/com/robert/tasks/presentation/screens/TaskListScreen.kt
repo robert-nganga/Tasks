@@ -26,96 +26,98 @@ import com.robert.tasks.utils.DateUtils
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
     onTaskClick: (Int) -> Unit,
-    onAddTaskClick: () -> Unit
+    onAddTaskClick: () -> Unit,
 ) {
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
-
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "Tasks",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             FloatingActionButton(
                 onClick = onAddTaskClick,
                 containerColor = Color(0xFF2196F3),
                 contentColor = Color.White,
-                modifier = Modifier.size(56.dp)
+                modifier = Modifier.size(56.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Task",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
         }
 
-
         if (isRefreshing) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator(color = Color(0xFF2196F3))
             }
         } else {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 16.dp)
+                contentPadding = PaddingValues(bottom = 16.dp),
             ) {
                 items(tasks) { task ->
                     TaskListItem(
                         task = task,
-                        onClick = { onTaskClick(task.id) }
+                        onClick = { onTaskClick(task.id) },
                     )
                 }
             }
         }
     }
-
 }
 
 @Composable
 fun TaskListItem(
     task: Task,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
-        ),
-        elevation = CardDefaults.cardElevation(0.dp)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+            ),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
         ) {
             Text(
                 text = task.title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -127,14 +129,10 @@ fun TaskListItem(
                 text = dueDateText,
                 fontSize = 14.sp,
                 color = dueDateColor,
-                fontWeight = if (task.isOverdue()) FontWeight.Medium else FontWeight.Normal
+                fontWeight = if (task.isOverdue()) FontWeight.Medium else FontWeight.Normal,
             )
         }
     }
 }
 
-
-
-fun Task.isOverdue(): Boolean {
-    return DateUtils.isOverdue(this.dueDate)
-}
+fun Task.isOverdue(): Boolean = DateUtils.isOverdue(this.dueDate)

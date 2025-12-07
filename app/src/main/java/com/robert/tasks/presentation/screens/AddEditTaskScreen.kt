@@ -66,7 +66,7 @@ import com.robert.tasks.utils.DateUtils
 fun AddEditTaskScreen(
     viewModel: AddEditTaskViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onTaskSaved: () -> Unit
+    onTaskSaved: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -76,7 +76,6 @@ fun AddEditTaskScreen(
 
     val isEditMode = viewModel.taskId != null
 
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,54 +83,59 @@ fun AddEditTaskScreen(
                     Text(
                         text = if (isEditMode) "Edit Task" else "New Task",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
                         )
                     }
                 },
                 actions = {
-                    val isButtonEnabled = state.title.isNotBlank() && state.dueDate.isNotBlank() && state.description.isNotBlank() && !state.isLoading
+                    val isButtonEnabled =
+                        state.title.isNotBlank() && state.dueDate.isNotBlank() && state.description.isNotBlank() && !state.isLoading
 
                     IconButton(
                         onClick = {
                             viewModel.saveTask()
                             onTaskSaved()
                         },
-                        enabled = isButtonEnabled
+                        enabled = isButtonEnabled,
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = "Save",
-                            tint = if (isButtonEnabled) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                            }
+                            tint =
+                                if (isButtonEnabled) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                },
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
             )
-        }
+        },
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(24.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(24.dp),
             ) {
                 // Title Input
                 OutlinedTextField(
@@ -142,55 +146,64 @@ fun AddEditTaskScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = RoundedCornerShape(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors =
+                        OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        ),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Due Date Selector
                 OutlinedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true },
-                    colors = CardDefaults.outlinedCardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { showDatePicker = true },
+                    colors =
+                        CardDefaults.outlinedCardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                        ),
                     shape = RoundedCornerShape(8.dp),
-                    border = CardDefaults.outlinedCardBorder().copy(
-                        width = 1.dp,
-                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
-                    )
+                    border =
+                        CardDefaults.outlinedCardBorder().copy(
+                            width = 1.dp,
+                            brush =
+                                androidx.compose.ui.graphics
+                                    .SolidColor(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)),
+                        ),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(
                                 text = "Due Date",
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             )
 
                             Text(
-                                text = if (state.dueDate.isNotEmpty()) {
-                                    DateUtils.formatToFullDate(state.dueDate)
-                                } else {
-                                    "Select due date"
-                                },
+                                text =
+                                    if (state.dueDate.isNotEmpty()) {
+                                        DateUtils.formatToFullDate(state.dueDate)
+                                    } else {
+                                        "Select due date"
+                                    },
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = if (state.dueDate.isNotEmpty()) {
-                                    MaterialTheme.colorScheme.onSurface
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                }
+                                color =
+                                    if (state.dueDate.isNotEmpty()) {
+                                        MaterialTheme.colorScheme.onSurface
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                    },
                             )
 
                             // Show relative time if date is set
@@ -198,19 +211,19 @@ fun AddEditTaskScreen(
                                 Text(
                                     text = DateUtils.getRelativeTimeText(state.dueDate),
                                     fontSize = 12.sp,
-                                    color = when {
-                                        DateUtils.isOverdue(state.dueDate) -> Color(0xFFEF4444)
-                                        DateUtils.isDueSoon(state.dueDate) -> Color(0xFFF59E0B)
-                                        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                    }
+                                    color =
+                                        when {
+                                            DateUtils.isOverdue(state.dueDate) -> Color(0xFFEF4444)
+                                            DateUtils.isDueSoon(state.dueDate) -> Color(0xFFF59E0B)
+                                            else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                        },
                                 )
                             }
                         }
 
-
                         if (state.dueDate.isNotEmpty()) {
                             TextButton(
-                                onClick = { viewModel.onDueDateChange("") }
+                                onClick = { viewModel.onDueDateChange("") },
                             ) {
                                 Text("Clear", color = MaterialTheme.colorScheme.primary)
                             }
@@ -226,15 +239,17 @@ fun AddEditTaskScreen(
                     onValueChange = { viewModel.onDescriptionChange(it) },
                     label = { Text("Description") },
                     placeholder = { Text("Add task description (optional)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(150.dp),
                     maxLines = 6,
                     shape = RoundedCornerShape(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors =
+                        OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        ),
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -243,43 +258,48 @@ fun AddEditTaskScreen(
                 if (isEditMode) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        border = CardDefaults.outlinedCardBorder().copy(
-                            width = 1.dp,
-                            brush = androidx.compose.ui.graphics.SolidColor(
-                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                            )
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        border =
+                            CardDefaults.outlinedCardBorder().copy(
+                                width = 1.dp,
+                                brush =
+                                    androidx.compose.ui.graphics.SolidColor(
+                                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                    ),
+                            ),
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                            ),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column {
                                 Text(
                                     text = "Task Status",
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.SemiBold,
                                 )
                                 Text(
                                     text = if (state.isCompleted) "Completed" else "Incomplete",
                                     fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 )
                             }
 
                             Switch(
                                 checked = state.isCompleted,
                                 onCheckedChange = { viewModel.onIsCompletedChange(it) },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color.White,
-                                    checkedTrackColor = Color(0xFF10B981)
-                                )
+                                colors =
+                                    SwitchDefaults.colors(
+                                        checkedThumbColor = Color.White,
+                                        checkedTrackColor = Color(0xFF10B981),
+                                    ),
                             )
                         }
                     }
@@ -293,37 +313,40 @@ fun AddEditTaskScreen(
                         text = "Attachments",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                            ),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.primary,
-                                        RoundedCornerShape(8.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(40.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.primary,
+                                            RoundedCornerShape(8.dp),
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Description,
                                     contentDescription = null,
                                     tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(20.dp),
                                 )
                             }
 
@@ -333,7 +356,7 @@ fun AddEditTaskScreen(
                                 text = state.fileUrl?.substringAfterLast("/") ?: "Attachment",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
@@ -349,12 +372,16 @@ fun AddEditTaskScreen(
                             onNavigateBack()
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFFEF4444)
-                        ),
-                        border = ButtonDefaults.outlinedButtonBorder().copy(
-                            brush = androidx.compose.ui.graphics.SolidColor(Color(0xFFEF4444))
-                        )
+                        colors =
+                            ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color(0xFFEF4444),
+                            ),
+                        border =
+                            ButtonDefaults.outlinedButtonBorder().copy(
+                                brush =
+                                    androidx.compose.ui.graphics
+                                        .SolidColor(Color(0xFFEF4444)),
+                            ),
                     ) {
                         Text("Delete Task")
                     }
@@ -364,10 +391,11 @@ fun AddEditTaskScreen(
             // Loading overlay
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
@@ -384,7 +412,7 @@ fun AddEditTaskScreen(
                 // Store temporarily - we'll combine with time
                 viewModel.onDueDateChange("$year-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T09:00")
             },
-            onDismiss = { showDatePicker = false }
+            onDismiss = { showDatePicker = false },
         )
     }
 
@@ -397,7 +425,7 @@ fun AddEditTaskScreen(
                 val currentDate = state.dueDate.substringBefore('T')
                 viewModel.onDueDateChange("${currentDate}T${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}")
             },
-            onDismiss = { showTimePicker = false }
+            onDismiss = { showTimePicker = false },
         )
     }
 }
@@ -406,7 +434,7 @@ fun AddEditTaskScreen(
 @Composable
 fun DatePickerDialog(
     onDateSelected: (year: Int, month: Int, day: Int) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val datePickerState = rememberDatePickerState()
 
@@ -416,12 +444,14 @@ fun DatePickerDialog(
             TextButton(
                 onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        val date = java.time.Instant.ofEpochMilli(millis)
-                            .atZone(java.time.ZoneId.systemDefault())
-                            .toLocalDate()
+                        val date =
+                            java.time.Instant
+                                .ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.systemDefault())
+                                .toLocalDate()
                         onDateSelected(date.year, date.monthValue, date.dayOfMonth)
                     }
-                }
+                },
             ) {
                 Text("OK", color = MaterialTheme.colorScheme.primary)
             }
@@ -430,7 +460,7 @@ fun DatePickerDialog(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     ) {
         DatePicker(state = datePickerState)
     }
@@ -440,12 +470,13 @@ fun DatePickerDialog(
 @Composable
 fun TimePickerDialog(
     onTimeSelected: (hour: Int, minute: Int) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
-    val timePickerState = rememberTimePickerState(
-        initialHour = 9,
-        initialMinute = 0
-    )
+    val timePickerState =
+        rememberTimePickerState(
+            initialHour = 9,
+            initialMinute = 0,
+        )
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -453,7 +484,7 @@ fun TimePickerDialog(
             TextButton(
                 onClick = {
                     onTimeSelected(timePickerState.hour, timePickerState.minute)
-                }
+                },
             ) {
                 Text("OK", color = MaterialTheme.colorScheme.primary)
             }
@@ -465,6 +496,6 @@ fun TimePickerDialog(
         },
         text = {
             TimePicker(state = timePickerState)
-        }
+        },
     )
 }

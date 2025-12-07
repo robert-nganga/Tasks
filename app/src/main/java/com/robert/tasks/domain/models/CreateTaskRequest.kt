@@ -4,5 +4,5 @@ data class CreateTaskRequest(
     val title: String,
     val dueDate: String,
     val description: String,
-    val fileUrl: String? = null
+    val fileUrl: String? = null,
 )

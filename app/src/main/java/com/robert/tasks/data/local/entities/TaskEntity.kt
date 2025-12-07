@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
 @Entity(tableName = "tasks")
 data class TaskEntity(
     @PrimaryKey
@@ -16,5 +15,5 @@ data class TaskEntity(
     @ColumnInfo(name = "is_completed")
     val isCompleted: Boolean,
     @ColumnInfo(name = "file_url")
-    val fileUrl: String?
+    val fileUrl: String?,
 )

@@ -4,11 +4,13 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Route: NavKey {
+sealed interface Route : NavKey {
+    @Serializable
+    data object Tasks : Route, NavKey
 
     @Serializable
-    data object Tasks: Route, NavKey
-
-    @Serializable
-    data class AddEditTask(val taskId: Int?): Route, NavKey
+    data class AddEditTask(
+        val taskId: Int?,
+    ) : Route,
+        NavKey
 }

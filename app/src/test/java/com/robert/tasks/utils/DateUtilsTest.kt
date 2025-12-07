@@ -7,7 +7,6 @@ import org.junit.Test
 import java.time.LocalDateTime
 
 class DateUtilsTest {
-
     private val fixedNow = LocalDateTime.of(2025, 12, 5, 12, 0) // December 5, 2025, 12:00 PM
 
     @Test

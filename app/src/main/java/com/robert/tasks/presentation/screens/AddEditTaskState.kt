@@ -6,5 +6,5 @@ data class AddEditTaskState(
     val dueDate: String = "",
     val description: String = "",
     val isCompleted: Boolean = false,
-    val fileUrl: String? = null
+    val fileUrl: String? = null,
 )

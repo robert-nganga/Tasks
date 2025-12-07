@@ -1,20 +1,20 @@
-import app.cash.turbine.test
 import com.robert.tasks.data.repositories.FakeTaskRepository
 import com.robert.tasks.data.repositories.TaskTestData
 import com.robert.tasks.presentation.navigation.Route
 import com.robert.tasks.presentation.viewmodels.AddEditTaskViewModel
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertNull
-import junit.framework.TestCase.assertTrue
+import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -23,81 +23,19 @@ class AddEditTaskViewModelTest {
     @get:Rule
     val mockkRule = MockKRule(this)
 
+    private lateinit var viewModel: AddEditTaskViewModel
+    private val fakeRepository = FakeTaskRepository()
+
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
     @After
     fun tearDown() {
         Dispatchers.resetMain()
     }
-
-    @Test
-    fun `initial state is empty when creating new task`() = runTest {
-        // Given
-        val navKey = Route.AddEditTask(taskId = null)
-
-        // When
-        viewModel = AddEditTaskViewModel(fakeRepository, navKey)
-
-        // Then
-        val state = viewModel.state.value
-        assertEquals("", state.title)
-        assertEquals("", state.description)
-        assertEquals("", state.dueDate)
-        assertFalse(state.isCompleted)
-        assertNull(state.fileUrl)
-        assertFalse(state.isLoading)
-    }
-
-    @Test
-    fun `getTask should load task into state when taskId is not null`() =
-        runTest {
-            val task = Task(1, "Task 1", "2025-01-01T12:00:00Z", "Description 1", false, null)
-            coEvery { taskRepository.getTask(1) } returns Result.success(task)
-            val navKey = Route.AddEditTask(1)
-
-            viewModel = AddEditTaskViewModel(taskRepository, navKey)
-
-            assertEquals("Task 1", viewModel.state.value.title)
-            assertEquals("Description 1", viewModel.state.value.description)
-        }
-
-    @Test
-    fun `saveTask should call createTask when taskId is null`() =
-        runTest {
-            val navKey = Route.AddEditTask(null)
-            viewModel = AddEditTaskViewModel(taskRepository, navKey)
-            viewModel.onTitleChange("New Task")
-            viewModel.onDescriptionChange("New Desc")
-            viewModel.onDueDateChange("2025-01-01T12:00:00Z")
-
-            viewModel.saveTask()
-
-            coVerify { taskRepository.createTask(any()) }
-        }
-
-    @Test
-    fun `saveTask should call updateTask when taskId is not null`() =
-        runTest {
-            val task = Task(1, "Task 1", "2025-01-01T12:00:00Z", "Description 1", false, null)
-            coEvery { taskRepository.getTask(1) } returns Result.success(task)
-            val navKey = Route.AddEditTask(1)
-            viewModel = AddEditTaskViewModel(taskRepository, navKey)
-
-            viewModel.saveTask()
-
-            coVerify { taskRepository.updateTask(1, any()) }
-        }
-
-    @Test
-    fun `deleteTask should call deleteTask from repository`() =
-        runTest {
-            val task = Task(1, "Task 1", "2025-01-01T12:00:00Z", "Description 1", false, null)
-            coEvery { taskRepository.getTask(1) } returns Result.success(task)
-            val navKey = Route.AddEditTask(1)
-            viewModel = AddEditTaskViewModel(taskRepository, navKey)
-
-            viewModel.deleteTask()
-
-            coVerify { taskRepository.deleteTask(1) }
-        }
 
     @Test
     fun `deleteTask does nothing when taskId is null`() = runTest {

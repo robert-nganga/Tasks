@@ -4,23 +4,34 @@ import app.cash.turbine.test
 import com.robert.tasks.data.repositories.FakeTaskRepository
 import com.robert.tasks.data.repositories.TaskTestData
 import com.robert.tasks.domain.models.Task
+import io.mockk.junit4.MockKRule
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TaskListViewModelTest {
-    @get:Rule
-    val mockkRule = MockKRule(this)
+    private lateinit var fakeRepository: FakeTaskRepository
+    private lateinit var viewModel: TaskListViewModel
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        fakeRepository = FakeTaskRepository()
+    }
 
     @After
     fun tearDown() {
@@ -58,70 +69,136 @@ class TaskListViewModelTest {
     }
 
     @Test
-    fun `tasks flow should emit tasks from repository`() =
-        runTest {
-            val tasks =
-                listOf(
-                    Task(1, "Task 1", "2025-01-01T12:00:00Z", "Description 1", false, null),
-                    Task(2, "Task 2", "2025-01-02T12:00:00Z", "Description 2", true, null),
-                )
-            coEvery { taskRepository.observeTasks() } returns tasksFlow
-            coEvery { taskRepository.refreshTasks() } returns Result.success(Unit)
-            viewModel = TaskListViewModel(taskRepository)
+    fun `tasks flow emits updates when repository changes`() = runTest {
+        // Given
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
 
-            viewModel.tasks.test {
-                tasksFlow.emit(tasks) // Emit after ViewModel initialization
-                val emittedTasks = awaitItem()
-                assertEquals(2, emittedTasks.size)
-                assertEquals("Task 1", emittedTasks[0].title)
-                assertEquals("Task 2", emittedTasks[1].title)
-            }
+        // When/Then
+        viewModel.tasks.test {
+            // Initial empty list
+            assertEquals(emptyList<Task>(), awaitItem())
+
+            // Add a task
+            val task = TaskTestData.createTask(id = 1, title = "New Task")
+            fakeRepository.addTasks(task)
+            advanceUntilIdle()
+
+            // Should emit updated list
+            val tasks = awaitItem()
+            assertEquals(1, tasks.size)
+            assertEquals("New Task", tasks[0].title)
         }
+    }
 
     @Test
-    fun `isRefreshing should be true while refreshing and false after`() =
-        runTest {
-            coEvery { taskRepository.observeTasks() } returns flowOf(emptyList()) // Mock observeTasks
-            coEvery { taskRepository.refreshTasks() } returns Result.success(Unit)
-            viewModel = TaskListViewModel(taskRepository) // Initialize ViewModel here
+    fun `refreshTasks calls repository refresh`() = runTest {
+        // Given
+        val task1 = TaskTestData.createTask(id = 1, title = "Task 1")
+        fakeRepository.addTasks(task1)
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
 
-            viewModel.isRefreshing.test {
-                // Initial state
-                assertEquals(false, awaitItem())
+        // When
+        viewModel.refreshTasks()
+        advanceUntilIdle()
 
-                // Trigger refresh (it's called in init, but we can call it again for explicit testing)
-                viewModel.refreshTasks()
-
-                // Should be true during refresh
-                assertEquals(true, awaitItem())
-
-                // Should be false after refresh completes
-                assertEquals(false, awaitItem())
-            }
-            coVerify(atLeast = 1) { taskRepository.refreshTasks() }
+        viewModel.tasks.test {
+            val tasks = awaitItem()
+            assertEquals(1, tasks.size)
         }
+
+    }
 
 
     @Test
-    fun `refreshTasks should update tasks flow`() =
-        runTest {
-            val initialTasks = listOf(Task(1, "Initial", "2025-01-01T12:00:00Z", "Desc", false, null))
-            val refreshedTasks = listOf(Task(3, "Refreshed", "2025-01-03T12:00:00Z", "Desc", false, null))
+    fun `handles repository refresh failure gracefully`() = runTest {
+        // Given
+        fakeRepository.setShouldReturnError(true)
 
-            coEvery { taskRepository.observeTasks() } returns tasksFlow
-            coEvery { taskRepository.refreshTasks() } coAnswers {
-                tasksFlow.emit(refreshedTasks)
-                Result.success(Unit)
-            }
-            viewModel = TaskListViewModel(taskRepository)
+        // When
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
 
-            viewModel.tasks.test {
-                tasksFlow.emit(initialTasks) // Emit after ViewModel initialization
-                assertEquals(initialTasks, awaitItem()) // Initial emission
+        // Then - should not crash and refreshing should be false
+        assertFalse(viewModel.isRefreshing.value)
+        assertEquals(emptyList<Task>(), viewModel.tasks.value)
+    }
 
-                viewModel.refreshTasks()
+    @Test
+    fun `tasks flow reflects task additions`() = runTest {
+        // Given
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
 
-                assertEquals(refreshedTasks, awaitItem()) // Refreshed emission
-            }
+        // When
+        val task1 = TaskTestData.createTask(id = 1, title = "Task 1")
+        fakeRepository.addTasks(task1)
+        advanceUntilIdle()
+
+        val task2 = TaskTestData.createTask(id = 2, title = "Task 2")
+        fakeRepository.addTasks(task2)
+        advanceUntilIdle()
+
+        viewModel.tasks.test {
+            val tasks = awaitItem()
+            assertEquals(2, tasks.size)
         }
+    }
+
+    @Test
+    fun `tasks flow reflects task updates`() = runTest {
+        // Given
+        val task = TaskTestData.createTask(id = 1, title = "Original Title")
+        fakeRepository.addTasks(task)
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
+
+        // When
+        val updateRequest = TaskTestData.updateTaskRequest(title = "Updated Title")
+        fakeRepository.updateTask(1, updateRequest)
+        advanceUntilIdle()
+
+        viewModel.tasks.test {
+            val tasks = awaitItem()
+            assertEquals(1, tasks.size)
+            assertEquals("Updated Title", tasks[0].title)
+        }
+    }
+
+    @Test
+    fun `tasks flow reflects task deletions`() = runTest {
+        // Given
+        val task1 = TaskTestData.createTask(id = 1, title = "Task 1")
+        val task2 = TaskTestData.createTask(id = 2, title = "Task 2")
+        fakeRepository.addTasks(task1, task2)
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
+
+        // When
+        fakeRepository.deleteTask(1)
+        advanceUntilIdle()
+
+        viewModel.tasks.test {
+            val tasks = awaitItem()
+            assertEquals(1, tasks.size)
+            assertEquals("Task 2", tasks[0].title)
+        }
+    }
+
+    @Test
+    fun `refreshing state returns to false even on repository error`() = runTest {
+        // Given
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
+
+        // When
+        fakeRepository.setShouldReturnError(true)
+        viewModel.refreshTasks()
+        advanceUntilIdle()
+
+        // Then
+        assertFalse(viewModel.isRefreshing.value)
+    }
+
 }

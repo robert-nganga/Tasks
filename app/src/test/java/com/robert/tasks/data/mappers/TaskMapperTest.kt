@@ -7,17 +7,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TaskMapperTest {
-
     @Test
     fun `TaskEntity toDomainModel`() {
-        val taskEntity = TaskEntity(
-            id = 1,
-            title = "Test Title",
-            dueDate = "2025-01-01T12:00:00Z",
-            description = "Test Description",
-            isCompleted = false,
-            fileUrl = "http://example.com/file.jpg"
-        )
+        val taskEntity =
+            TaskEntity(
+                id = 1,
+                title = "Test Title",
+                dueDate = "2025-01-01T12:00:00Z",
+                description = "Test Description",
+                isCompleted = false,
+                fileUrl = "http://example.com/file.jpg",
+            )
 
         val task = taskEntity.toDomainModel()
 
@@ -31,14 +31,15 @@ class TaskMapperTest {
 
     @Test
     fun `TaskResponse toDomainModel`() {
-        val taskResponse = TaskResponse(
-            id = 1,
-            title = "Test Title",
-            dueDate = "2025-01-01T12:00:00Z",
-            description = "Test Description",
-            isCompleted = false,
-            fileUrl = "http://example.com/file.jpg"
-        )
+        val taskResponse =
+            TaskResponse(
+                id = 1,
+                title = "Test Title",
+                dueDate = "2025-01-01T12:00:00Z",
+                description = "Test Description",
+                isCompleted = false,
+                fileUrl = "http://example.com/file.jpg",
+            )
 
         val task = taskResponse.toDomainModel()
 
@@ -52,14 +53,15 @@ class TaskMapperTest {
 
     @Test
     fun `TaskResponse toEntity`() {
-        val taskResponse = TaskResponse(
-            id = 1,
-            title = "Test Title",
-            dueDate = "2025-01-01T12:00:00Z",
-            description = "Test Description",
-            isCompleted = false,
-            fileUrl = "http://example.com/file.jpg"
-        )
+        val taskResponse =
+            TaskResponse(
+                id = 1,
+                title = "Test Title",
+                dueDate = "2025-01-01T12:00:00Z",
+                description = "Test Description",
+                isCompleted = false,
+                fileUrl = "http://example.com/file.jpg",
+            )
 
         val taskEntity = taskResponse.toEntity()
 
@@ -73,14 +75,15 @@ class TaskMapperTest {
 
     @Test
     fun `Task toEntity`() {
-        val task = Task(
-            id = 1,
-            title = "Test Title",
-            dueDate = "2025-01-01T12:00:00Z",
-            description = "Test Description",
-            isCompleted = false,
-            fileUrl = "http://example.com/file.jpg"
-        )
+        val task =
+            Task(
+                id = 1,
+                title = "Test Title",
+                dueDate = "2025-01-01T12:00:00Z",
+                description = "Test Description",
+                isCompleted = false,
+                fileUrl = "http://example.com/file.jpg",
+            )
 
         val taskEntity = task.toEntity()
 

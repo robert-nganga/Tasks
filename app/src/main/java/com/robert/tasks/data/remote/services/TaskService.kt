@@ -12,22 +12,27 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface TaskService {
-
     @GET("tasks")
     suspend fun getTasks(): Response<List<TaskResponse>>
 
     @GET("tasks/{id}")
-    suspend fun getTask(@Path("id") id: Int): Response<TaskResponse>
+    suspend fun getTask(
+        @Path("id") id: Int,
+    ): Response<TaskResponse>
 
     @POST("tasks")
-    suspend fun createTask(@Body request: CreateTaskRequest): Response<TaskResponse>
+    suspend fun createTask(
+        @Body request: CreateTaskRequest,
+    ): Response<TaskResponse>
 
     @PUT("tasks/{id}")
     suspend fun updateTask(
         @Path("id") id: Int,
-        @Body request: UpdateTaskRequest
+        @Body request: UpdateTaskRequest,
     ): Response<TaskResponse>
 
     @DELETE("tasks/{id}")
-    suspend fun deleteTask(@Path("id") id: Int): Response<Unit>
+    suspend fun deleteTask(
+        @Path("id") id: Int,
+    ): Response<Unit>
 }

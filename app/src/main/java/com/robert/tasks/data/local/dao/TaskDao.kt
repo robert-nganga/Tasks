@@ -8,10 +8,8 @@ import androidx.room.Update
 import com.robert.tasks.data.local.entities.TaskEntity
 import kotlinx.coroutines.flow.Flow
 
-
 @Dao
 interface TaskDao {
-
     @Query("SELECT * FROM tasks")
     fun observeAllTasks(): Flow<List<TaskEntity>>
 

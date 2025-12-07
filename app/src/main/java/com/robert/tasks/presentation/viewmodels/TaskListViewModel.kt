@@ -11,34 +11,35 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
-class TaskListViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
-) : ViewModel() {
+class TaskListViewModel
+    @Inject
+    constructor(
+        private val taskRepository: TaskRepository,
+    ) : ViewModel() {
+        private val _isRefreshing = MutableStateFlow(false)
+        val isRefreshing = _isRefreshing.asStateFlow()
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
+        val tasks =
+            taskRepository
+                .observeTasks()
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 2000L),
+                    initialValue = emptyList(),
+                )
 
-    val tasks = taskRepository
-        .observeTasks()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 2000L),
-            initialValue = emptyList()
-        )
-
-    init {
-        refreshTasks()
-    }
-
-
-    fun refreshTasks() = viewModelScope.launch {
-        _isRefreshing.value = true
-        val result = taskRepository.refreshTasks()
-        _isRefreshing.value = false
-        if (result.isFailure) {
-            println("Failed to refresh tasks: ${result.exceptionOrNull()}")
+        init {
+            refreshTasks()
         }
+
+        fun refreshTasks() =
+            viewModelScope.launch {
+                _isRefreshing.value = true
+                val result = taskRepository.refreshTasks()
+                _isRefreshing.value = false
+                if (result.isFailure) {
+                    println("Failed to refresh tasks: ${result.exceptionOrNull()}")
+                }
+            }
     }
-}

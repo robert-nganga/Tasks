@@ -5,5 +5,5 @@ data class UpdateTaskRequest(
     val dueDate: String?,
     val description: String?,
     val isCompleted: Boolean?,
-    val fileUrl: String?
+    val fileUrl: String?,
 )

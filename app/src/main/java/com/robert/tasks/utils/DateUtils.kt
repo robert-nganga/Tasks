@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 object DateUtils {
-
     // Input format from your API: "2025-12-15T06:00"
     private val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
 
@@ -19,14 +18,16 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return LocalDateTime or null if parsing fails
      */
-    fun parseDate(dateString: String?): LocalDateTime? {
-        return try {
-            if (dateString.isNullOrBlank()) null
-            else LocalDateTime.parse(dateString, inputFormatter)
+    fun parseDate(dateString: String?): LocalDateTime? =
+        try {
+            if (dateString.isNullOrBlank()) {
+                null
+            } else {
+                LocalDateTime.parse(dateString, inputFormatter)
+            }
         } catch (e: Exception) {
             null
         }
-    }
 
     /**
      * Formats date to "May 5" format
@@ -65,7 +66,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return true if the due date has passed
      */
-    fun isOverdue(dateString: String?, now: LocalDateTime = LocalDateTime.now()): Boolean {
+    fun isOverdue(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): Boolean {
         val dueDate = parseDate(dateString) ?: return false
         return dueDate.isBefore(now)
     }
@@ -75,7 +79,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return true if due date is today
      */
-    fun isDueToday(dateString: String?, now: LocalDateTime = LocalDateTime.now()): Boolean {
+    fun isDueToday(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): Boolean {
         val dueDate = parseDate(dateString) ?: return false
         return dueDate.toLocalDate() == now.toLocalDate()
     }
@@ -85,7 +92,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return true if due date is tomorrow
      */
-    fun isDueTomorrow(dateString: String?, now: LocalDateTime = LocalDateTime.now()): Boolean {
+    fun isDueTomorrow(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): Boolean {
         val dueDate = parseDate(dateString) ?: return false
         val tomorrow = now.plusDays(1)
         return dueDate.toLocalDate() == tomorrow.toLocalDate()
@@ -96,7 +106,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return "today", "tomorrow", "Overdue", or formatted date like "Dec 15"
      */
-    fun getDueDateText(dateString: String?, now: LocalDateTime = LocalDateTime.now()): String {
+    fun getDueDateText(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): String {
         if (dateString.isNullOrBlank()) return "No due date"
 
         return when {
@@ -112,7 +125,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return Negative if overdue, positive if upcoming, null if invalid
      */
-    fun getDaysUntilDue(dateString: String?, now: LocalDateTime = LocalDateTime.now()): Long? {
+    fun getDaysUntilDue(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): Long? {
         val dueDate = parseDate(dateString) ?: return null
         return ChronoUnit.DAYS.between(now.toLocalDate(), dueDate.toLocalDate())
     }
@@ -122,7 +138,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return Human-readable relative time
      */
-    fun getRelativeTimeText(dateString: String?, now: LocalDateTime = LocalDateTime.now()): String {
+    fun getRelativeTimeText(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): String {
         val days = getDaysUntilDue(dateString, now) ?: return "Invalid date"
 
         return when {
@@ -147,7 +166,10 @@ object DateUtils {
      * @param dateString Format: "2025-12-15T06:00"
      * @return true if due within 3 days and not overdue
      */
-    fun isDueSoon(dateString: String?, now: LocalDateTime = LocalDateTime.now()): Boolean {
+    fun isDueSoon(
+        dateString: String?,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): Boolean {
         val days = getDaysUntilDue(dateString, now) ?: return false
         return days in 0..3
     }
@@ -156,9 +178,7 @@ object DateUtils {
      * Gets the current date time as a formatted string
      * @return Current date in "yyyy-MM-dd'T'HH:mm" format
      */
-    fun getCurrentDateTime(now: LocalDateTime = LocalDateTime.now()): String {
-        return now.format(inputFormatter)
-    }
+    fun getCurrentDateTime(now: LocalDateTime = LocalDateTime.now()): String = now.format(inputFormatter)
 
     /**
      * Creates a date string from components
@@ -169,7 +189,13 @@ object DateUtils {
      * @param minute The minute (0-59)
      * @return Formatted date string "yyyy-MM-dd'T'HH:mm"
      */
-    fun createDateString(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0): String {
+    fun createDateString(
+        year: Int,
+        month: Int,
+        day: Int,
+        hour: Int = 0,
+        minute: Int = 0,
+    ): String {
         val dateTime = LocalDateTime.of(year, month, day, hour, minute)
         return dateTime.format(inputFormatter)
     }

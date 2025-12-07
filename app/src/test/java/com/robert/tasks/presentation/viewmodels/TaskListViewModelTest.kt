@@ -1,40 +1,60 @@
 package com.robert.tasks.presentation.viewmodels
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.robert.tasks.data.repositories.FakeTaskRepository
+import com.robert.tasks.data.repositories.TaskTestData
 import com.robert.tasks.domain.models.Task
-import com.robert.tasks.domain.repositories.TaskRepository
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.junit4.MockKRule
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class TaskListViewModelTest {
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
-    @RelaxedMockK
-    private lateinit var taskRepository: TaskRepository
+    @Test
+    fun `initial state has empty task list`() = runTest {
+        // When
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
 
-    private lateinit var viewModel: TaskListViewModel
+        // Then
+        assertEquals(emptyList<Task>(), viewModel.tasks.value)
+        assertFalse(viewModel.isRefreshing.value)
+    }
 
-    private val tasksFlow = MutableStateFlow<List<Task>>(emptyList())
+    @Test
+    fun `observes tasks from repository`() = runTest {
+        // Given
+        val task1 = TaskTestData.createTask(id = 1, title = "Task 1")
+        val task2 = TaskTestData.createTask(id = 2, title = "Task 2")
+        fakeRepository.addTasks(task1, task2)
 
-    @Before
-    fun setUp() {
-        // No-op, ViewModel will be initialized in each test within runTest
+        // When
+        viewModel = TaskListViewModel(fakeRepository)
+        advanceUntilIdle()
+
+        viewModel.tasks.test {
+            val tasks = awaitItem()
+            assertEquals(2, tasks.size)
+            assertEquals("Task 1", tasks[0].title)
+            assertEquals("Task 2", tasks[1].title)
+        }
     }
 
     @Test
@@ -80,6 +100,7 @@ class TaskListViewModelTest {
             }
             coVerify(atLeast = 1) { taskRepository.refreshTasks() }
         }
+
 
     @Test
     fun `refreshTasks should update tasks flow`() =
